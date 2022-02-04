@@ -29,6 +29,7 @@ int main() {
 
 	int count = 0;
 	int cont = 1;
+	int temporary;
 	double value;
 
 	string expression;
@@ -36,10 +37,11 @@ int main() {
 
 	cout << "Current Operators are '+', '-', '/', '*', '^', '(', and ')'" << endl;
 	cout << "To End Calculating type (N)" << endl;
-	cout << "To View History type (H)" << endl << endl;
+	cout << "To Delete History type (D)" << endl;
+	cout << "To View History type (H)" << endl;
 
 	while (cont != 0) {
-
+		cout << "\n";
 		cout << "Enter Infix Expression \n";
 		getline(cin, expression);
 		if (expression[0] == 'N' || expression[0] == 'n') cont = 0;
@@ -47,20 +49,26 @@ int main() {
 			Queue temp(100);
 			while (!History.IsEmpty()) {
 				History.Dequeue(value);
-				int g = value;
-				printS(info[g]);
+				temporary = value;
+				printS(info[temporary]);
 				temp.Enqueue(value);
 			}
 			while (!temp.IsEmpty()) {
 				temp.Dequeue(value);
 				History.Enqueue(value);
+				count = 0;
+			}
+		}
+		else if (expression[0] == 'D' || expression[0] == 'd') {
+			while (!History.IsEmpty()) {
+				History.Dequeue(value);
 			}
 		}
 		else {
 			postfix = Input.InToPost(expression);
 			cout << "PostFix = " << postfix << "\n";
 			float val = Input.Eval(postfix);
-			cout << "Answer = " << val << endl << endl;
+			cout << "Answer = " << val << endl;
 
 			info[count].infix = expression;
 			info[count].postfix = postfix;
@@ -72,11 +80,11 @@ int main() {
 		}
 	}
 
-
+	/*
 	while (!History.IsEmpty()) {
 		History.Dequeue(value);
 		int g = value;
 		printS(info[g]);
-	}
+	}*/
 	return 0;
 }
