@@ -12,6 +12,7 @@ public:
 	int HigherPrec(char op1, char op2);
 	bool IsOperator(char op);
 	bool IsOperand(char op);
+	bool Neither(char op);
 	int Weight(char op);
 
 	//evaluate postfix
@@ -26,7 +27,6 @@ private:
 	float n1;
 	float n2;
 	int counter;
-	int b;
 	string post;
 	
 	
