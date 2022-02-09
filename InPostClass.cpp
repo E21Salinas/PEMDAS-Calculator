@@ -7,12 +7,19 @@
 using namespace std;
 
 //Infix to Postfix
+
+//This parses through the user infix input and organizes it using stacks
 string InPost::InToPost(string exp) {
 	Stack Op(exp.length());
 	post = "";
 	int c = 0;
 	for (int i = 0; i < exp.length(); i++) {
 		if (exp[i] == ' ' || exp[i] == ',') continue;
+		else if (Neither(exp[i])) { //Finds invalid inputs in the sense of using improper operands
+			post = "Invalid Input";
+			return(post);
+			break;
+		}
 		else if (IsOperator(exp[i])) {
 			while (!Op.IsEmpty() && Op.Top() != '(' && HigherPrec(Op.Top(), exp[i])) {
 				post += Op.Top();
@@ -21,17 +28,16 @@ string InPost::InToPost(string exp) {
 			}
 			Op.Push(exp[i]);
 		}
-		else if (IsOperand(exp[i])) {
-			b = 1;
+		else if (IsOperand(exp[i])) { //This allows the code to read in multidigit and decimal Operands
 			counter = 0;
-			while (b != 0) {
+			while (true) {
 
-				if (IsOperand(exp[i + counter]) || exp[i+counter] == '.') {
+				if (IsOperand(exp[i + counter]) ){//makes sure that what is being read in is the operand
 					post += exp[i + counter];
-					exp[i + counter] = ' ';
+					exp[i + counter] = ' '; //this clears the future exp so that the code doesn't reuse a used value
 					counter++;
 				}
-				else b = 0;
+				else break;
 			}
 			post += ' ';
 		}
@@ -47,16 +53,14 @@ string InPost::InToPost(string exp) {
 			Op.Pop();
 		}
 	}
-	while (!Op.IsEmpty()) {
+	while (!Op.IsEmpty()) {//Empties the stack which contains postfix into string
 		post += Op.Top();
 		post += ' ';
 		Op.Pop();
-
 	}
 	
 	
-
-	return post;
+	return post; //returns postfix
 }
 
 bool InPost::IsOperator(char op) {
@@ -66,13 +70,18 @@ bool InPost::IsOperator(char op) {
 }
 
 bool InPost::IsOperand(char op) {
-	if (op >= '0' && op <= '9') {
+	if (op >= '0' && op <= '9' || op == '.') {
 		return true;
 	}
 	return false;
 }
 
-int InPost::Weight(char op) {
+bool InPost::Neither(char op) {
+	if (!IsOperand(op) && !IsOperator(op)) return true;
+	else return false;
+}
+
+int InPost::Weight(char op) { //prioritizes the operands in PEMDAS order
 
 	if (op == '+' || op == '-') weight = 1;
 	else if (op == '*' || op == '/') weight = 2;
@@ -91,7 +100,7 @@ int InPost::HigherPrec(char op1, char op2) {
 
 //Evaluating Postfix
 
-float InPost::Perform(char op, float val1, float val2) {
+float InPost::Perform(char op, float val1, float val2) { //performs the PEMDAS operations
 	if (op == '+') return val1 + val2;
 	else if (op == '-') return val1 - val2;
 	else if (op == '*') return val1 * val2;
@@ -109,7 +118,7 @@ float InPost::Eval(string exp) {
 	
 	for (int i = 0; i < exp.length(); i++) {
 		if (exp[i] == ' ' || exp[i] == ',') continue;
-		else if (IsOperator(exp[i])) {
+		else if (IsOperator(exp[i])) { //takes the values and performs corresponding operator and pushes result on stack
 			n2 = Op.Top();
 			Op.Pop();
 			n1 = Op.Top();
@@ -119,20 +128,18 @@ float InPost::Eval(string exp) {
 			Op.Push(result);
 		}
 		else if (IsOperand(exp[i])) {
-			string answer;
+			post = "";
 			counter = 0;
-			b = 1;
-			while (b != 0) {
-				if (exp[i + counter] == ' ') b = 0;
-				else if (IsOperand(exp[i + counter]) || exp[i+counter] == '.') {
-					answer += exp[i + counter];
-					exp[i + counter] = ' ';
+			while (true) {
+				if (IsOperand(exp[i + counter]) || exp[i + counter] == '.') {
+					post += exp[i + counter];
+					exp[i + counter] = ' '; //this clears the future exp so that the code doesn't reuse a used value
 				}
-				else b = 0;
+				else break;
 				counter++;
 			}
-			stringstream r(answer);
-			r >> result;
+			stringstream r(post); //Pulls Numerical value from string
+			r >> result;  //Converts value to float
 			Op.Push(result);
 		}
 	}
