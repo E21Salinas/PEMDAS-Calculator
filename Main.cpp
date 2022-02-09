@@ -70,18 +70,23 @@ int main() {
 		}
 		else {
 			postfix = Input.InToPost(expression); //finds postfix
-			cout << "PostFix = " << postfix << "\n";
-			float val = Input.Eval(postfix); //returns evaluated postfix
-			cout << "Answer = " << val << endl;
+			if (postfix == "Invalid Input") {
+				cout << "PostFix = " << postfix << "\n";
+				continue;
+			}
+			else {
+				cout << "PostFix = " << postfix << "\n";
+				float val = Input.Eval(postfix); //returns evaluated postfix
+				cout << "Answer = " << val << endl;
+				//inputs the information to the structs
+				info[index].infix = expression;
+				info[index].postfix = postfix;
+				info[index].answer = val;
+				info[index].counter = index;
+				History.Enqueue(index); //index is stored in history
 
-			//inputs the information to the structs
-			info[index].infix = expression;
-			info[index].postfix = postfix;
-			info[index].answer = val;
-			info[index].counter = index;
-			History.Enqueue(index); //index is stored in history
-
-			index++;
+				index++;
+			}
 		}
 	}
 
